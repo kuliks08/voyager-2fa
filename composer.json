@@ -11,14 +11,14 @@
     ],
     "autoload": {
         "psr-4": {
-            "Emptynick\\TwoFA\\": "src/"
+            "Kuliks08\\TwoFA\\": "src/"
         }
     },
     "minimum-stability": "dev",
     "extra": {
         "laravel": {
             "providers": [
-                "Emptynick\\TwoFA\\TwoFAServiceProvider"
+                "Kuliks08\\TwoFA\\TwoFAServiceProvider"
             ]
         }
     },

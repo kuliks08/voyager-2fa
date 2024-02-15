@@ -1,6 +1,6 @@
 <?php
 
-namespace Emptynick\TwoFA;
+namespace Kuliks08\TwoFA;
 
 use Closure;
 use Illuminate\Http\Request;
@@ -15,7 +15,7 @@ use Voyager\Admin\Facades\Voyager;
 use Voyager\Admin\Manager\Menu as MenuManager;
 use Voyager\Admin\Plugins\AuthenticationPlugin as BaseAuthPlugin;
 
-use Emptynick\TwoFA\Provider\{Settings as SettingsProvider, Routes as RoutesProvider};
+use Kuliks08\TwoFA\Provider\{Settings as SettingsProvider, Routes as RoutesProvider};
 
 class TwoFA extends BaseAuthPlugin implements AuthenticationPlugin, JS, ProtectedRoutes, Settings
 {

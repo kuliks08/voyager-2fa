@@ -1,6 +1,6 @@
 <?php
 
-namespace Emptynick\TwoFA\Commands;
+namespace Kuliks08\TwoFA\Commands;
 
 use Illuminate\Console\Command;
 use Spatie\Permission\Models\Permission;
@@ -44,7 +44,7 @@ class InstallCommand extends Command
         }
 
         $this->info('Publishing migrations');
-        $this->call('vendor:publish', ['--provider' => \Emptynick\TwoFA\TwoFAServiceProvider::class]);
+        $this->call('vendor:publish', ['--provider' => \Kuliks08\TwoFA\TwoFAServiceProvider::class]);
         if ($this->confirm('Do you wish to migrate now? Skip this if you want to modify the migration file', true)) {
             $this->call('migrate');
             $this->info('Successfully migrated!');

@@ -1,16 +1,16 @@
 <?php
 
-namespace Emptynick\TwoFA;
+namespace Kuliks08\TwoFA;
 
 use Illuminate\Support\ServiceProvider;
-use Voyager\Admin\Facades\Voyager as Voyager;
+use TCG\Voyager\Facades\Voyager as Voyager;
 use Voyager\Admin\Manager\Plugins as PluginManager;
 
 class TwoFAServiceProvider extends ServiceProvider
 {
     public function boot(PluginManager $pluginmanager)
     {
-        $pluginmanager->addPlugin(\Emptynick\TwoFA\TwoFA::class);
+        $pluginmanager->addPlugin(\Kuliks08\TwoFA\TwoFA::class);
 
         $this->loadTranslationsFrom(realpath(__DIR__.'/../resources/lang'), '2fa');
         Voyager::addTranslations('2fa', '2fa');

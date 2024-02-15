@@ -1,6 +1,6 @@
 <?php
 
-namespace Emptynick\TwoFA\Provider;
+namespace Kuliks08\TwoFA\Provider;
 
 trait Settings {
     public function provideSettings(): array
