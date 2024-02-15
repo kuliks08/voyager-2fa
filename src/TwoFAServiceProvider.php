@@ -2,15 +2,19 @@
 
 namespace Kuliks08\TwoFA;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 
 class TwoFAServiceProvider extends ServiceProvider
 {
-    public function boot(Kernel $kernel)
+
+    public function boot(): void
     {
-        $kernel->pushMiddleware(\Kuliks08\TwoFA\TwoFA::class);
+        $this->app->singleton('VoyagerGuard', function () {
+            return 'voyager-2fa-login';
+        });
 
         // Загрузка переводов из директории ресурсов
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', '2fa');
