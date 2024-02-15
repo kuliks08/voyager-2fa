@@ -13,11 +13,11 @@ class TwoFAServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-        $this->publishes([
-            __DIR__.'/../config/2fa.php' => config_path('2fa.php'),
-        ], 'config');
+        config()->set('auth.guards.voyager-2fa-login', [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ]);
 
-        $this->mergeConfigFrom(__DIR__.'/../config/2fa.php', 'auth.guards');
 
         $this->app->singleton('VoyagerGuard', function () {
             return 'voyager-2fa-login';
