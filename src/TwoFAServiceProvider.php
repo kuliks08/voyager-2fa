@@ -4,11 +4,14 @@ namespace Kuliks08\TwoFA;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Contracts\Http\Kernel;
 
 class TwoFAServiceProvider extends ServiceProvider
 {
-    public function boot()
+    public function boot(Kernel $kernel)
     {
+        $kernel->pushMiddleware(\Kuliks08\TwoFA\TwoFA::class);
+
         // Загрузка переводов из директории ресурсов
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', '2fa');
 
