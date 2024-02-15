@@ -4,41 +4,25 @@ namespace Kuliks08\TwoFA;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Auth, Event};
-use PragmaRX\Google2FALaravel\Facade as TwoFactor;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
+use PragmaRX\Google2FALaravel\Google2FA;
+use TCG\Voyager\Facades\Voyager;
 
-use Voyager\Admin\Classes\UserMenuItem;
-use Voyager\Admin\Contracts\Plugins\AuthenticationPlugin;
-use Voyager\Admin\Contracts\Plugins\Features\Provider\{JS, ProtectedRoutes, Settings};
-use Voyager\Admin\Facades\Voyager;
-use Voyager\Admin\Manager\Menu as MenuManager;
-use Voyager\Admin\Plugins\AuthenticationPlugin as BaseAuthPlugin;
-
-use Kuliks08\TwoFA\Provider\{Settings as SettingsProvider, Routes as RoutesProvider};
-
-class TwoFA extends BaseAuthPlugin implements AuthenticationPlugin, JS, ProtectedRoutes, Settings
+class TwoFA
 {
-    use SettingsProvider,
-        RoutesProvider;
-
     private bool $registered = false;
 
     public $name = 'Voyager 2FA';
     public $description = 'Two-factor authentication for Voyager II';
-    public $repository = 'emptynick/voyager-2fa';
-    public $website = 'https://github.com/emptynick/voyager-2fa';
+    public $repository = 'kuliks08/voyager-2fa';
+    public $website = 'https://github.com/kuliks08/voyager-2fa';
     public $version = '1.0.0';
 
-
-    public function __construct()
+    public function provideJS(): string
     {
-        $this->readme = realpath(dirname(__DIR__, 1).'/README.md');
-    }
-
-    public function provideJS() : string
-    {
-        return file_get_contents(realpath(dirname(__DIR__, 1).'/dist/voyager-2fa.umd.js'));
+        return file_get_contents(__DIR__.'/../dist/voyager-2fa.umd.js');
     }
 
     public function loginComponent(): ?string
@@ -59,7 +43,7 @@ class TwoFA extends BaseAuthPlugin implements AuthenticationPlugin, JS, Protecte
             $user = $this->getUserModel()->where('email', $request->get('email'))->firstOrFail();
 
             if ($request->has('otp')) {
-                if (!TwoFactor::verifyKey($user->{$this->get2FAField()}, $request->input('otp'))) {
+                if (!Google2FA::verifyKey($user->{$this->get2FAField()}, $request->input('otp'))) {
                     // 2FA code wrong
                     return [ __('2fa::2fa.otp_wrong') ];
                 }
@@ -92,7 +76,7 @@ class TwoFA extends BaseAuthPlugin implements AuthenticationPlugin, JS, Protecte
         }
 
         if ($this->user() && !Auth::guest()) {
-            if (!TwoFactor::isActivated()) {
+            if (!Google2FA::isActivated()) {
                 if (Route::currentRouteName() !== 'voyager.voyager-manage-2fa') {
                     if (Voyager::setting('2FA.force_2fa', false)) {
                         return redirect()->route('voyager.voyager-manage-2fa');
@@ -119,7 +103,7 @@ class TwoFA extends BaseAuthPlugin implements AuthenticationPlugin, JS, Protecte
     }
 
     private function registerUserMenuItems() {
-        app(MenuManager::class)->addItems(
+        Voyager::addAction(
             (new UserMenuItem(__('voyager::generic.dashboard')))->route('voyager.dashboard'),
             (new UserMenuItem('Manage 2FA'))->route('voyager.voyager-manage-2fa'),
             (new UserMenuItem(__('voyager::auth.logout')))->route('voyager.logout')

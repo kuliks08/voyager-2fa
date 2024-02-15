@@ -5,17 +5,17 @@ namespace Kuliks08\TwoFA\Provider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use PragmaRX\Google2FALaravel\Facade as TwoFactor;
-use Voyager\Admin\Facades\Voyager;
+use PragmaRX\Google2FALaravel\Google2FA;
+use TCG\Voyager\Facades\Voyager;
 
 trait Routes {
     public function provideProtectedRoutes(): void
     {
         Route::get('manage-2fa', function (Request $request) {
-            $key = TwoFactor::generateSecretKey();
+            $key = Google2FA::generateSecretKey();
             return Inertia::render('voyager-2fa-manage', [
                 'twofakey'  => $key,
-                'qr'        => str_replace(['#fefefe', '#000000'], ['none', 'currentcolor'], TwoFactor::getQRCodeInline(
+                'qr'        => str_replace(['#fefefe', '#000000'], ['none', 'currentcolor'], Google2FA::getQRCodeInline(
                     config('app.name'),
                     $this->name(),
                     $key,
@@ -35,9 +35,9 @@ trait Routes {
                 } else {
                     abort(500, __('2fa::2fa.cannot_disable'));
                 }
-            } else if (!TwoFactor::verifyKey($request->input('key'), $request->input('code'))) {
+            } else if (!Google2FA::verifyKey($request->input('key'), $request->input('code'))) {
                 abort(500, __('2fa::2fa.otp_wrong'));
-			} else {
+            } else {
                 $this->user()->{$this->get2FAField()} = $request->input('key');
                 $this->user()->save();
 

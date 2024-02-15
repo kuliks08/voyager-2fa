@@ -3,21 +3,22 @@
 namespace Kuliks08\TwoFA;
 
 use Illuminate\Support\ServiceProvider;
-use TCG\Voyager\Facades\Voyager as Voyager;
-use Voyager\Admin\Manager\Plugins as PluginManager;
+use Illuminate\Support\Facades\Lang;
 
 class TwoFAServiceProvider extends ServiceProvider
 {
-    public function boot(PluginManager $pluginmanager)
+    public function boot()
     {
-        $pluginmanager->addPlugin(\Kuliks08\TwoFA\TwoFA::class);
+        // Загрузка переводов из директории ресурсов
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', '2fa');
 
-        $this->loadTranslationsFrom(realpath(__DIR__.'/../resources/lang'), '2fa');
-        Voyager::addTranslations('2fa', '2fa');
-
+        // Публикация миграций
         $this->publishes([
             __DIR__.'/../migrations/' => database_path('migrations')
         ], '2fa-migrations');
+
+        // Регистрация переводов
+        Lang::addNamespace('2fa', __DIR__.'/../resources/lang');
     }
 
     public function register()

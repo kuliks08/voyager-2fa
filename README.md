@@ -4,7 +4,7 @@ This plugin for Voyager II uses [pragmarx/google2fa-laravel](https://github.com/
 
 ## Installation
 
-First, run `composer require emptynick/voyager-2fa`.  
+First, run `composer require kuliks08/voyager-2fa`.  
 After that run `php artisan 2fa:install`.  
 
 This will:
