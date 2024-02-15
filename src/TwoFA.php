@@ -67,7 +67,7 @@ class TwoFA
         return [ __('voyager::auth.login_failed') ];
     }
 
-    public function handleRequest(Request $request, Closure $next): mixed
+    public function handle(Request $request, Closure $next): mixed
     {
         if (!$this->registered) {
             auth()->setDefaultDriver($this->guard());
