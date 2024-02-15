@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use PragmaRX\Google2FALaravel\Google2FA;
-use TCG\Voyager\Facades\Voyager;
+use TCG\Voyager\Voyager;
 
 trait Routes {
     public function provideProtectedRoutes(): void

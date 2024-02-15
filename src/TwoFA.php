@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use PragmaRX\Google2FALaravel\Google2FA;
-use TCG\Voyager\Facades\Voyager;
+use TCG\Voyager\Voyager;
 use TCG\Voyager\Models\MenuItem;
 
 class TwoFA
@@ -103,7 +103,8 @@ class TwoFA
         return app(config('auth.providers.'.config('guards.'.$this->guard().'.provider', 'users').'.model', null));
     }
 
-    private function registerUserMenuItems() {
+    private function registerUserMenuItems(): void
+    {
         // Проверяем, есть ли уже пункт меню "Manage 2FA", чтобы избежать дублирования
         $existingMenuItem = MenuItem::where('title', 'Manage 2FA')->first();
 
