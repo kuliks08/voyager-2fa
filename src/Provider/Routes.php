@@ -5,8 +5,11 @@ namespace Kuliks08\TwoFA\Provider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use PragmaRX\Google2FALaravel\Google2FA;
 use TCG\Voyager\Voyager;
+use PragmaRX\Google2FA\Exceptions\IncompatibleWithGoogleAuthenticatorException;
+use PragmaRX\Google2FA\Exceptions\InvalidCharactersException;
+use PragmaRX\Google2FA\Exceptions\SecretKeyTooShortException;
+use PragmaRX\Google2FAQRCode\Google2FA;
 
 trait Routes {
     public function provideProtectedRoutes(): void

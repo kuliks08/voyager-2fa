@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
-use PragmaRX\Google2FALaravel\Google2FA;
+use PragmaRX\Google2FA\Exceptions\IncompatibleWithGoogleAuthenticatorException;
+use PragmaRX\Google2FA\Exceptions\InvalidCharactersException;
+use PragmaRX\Google2FA\Exceptions\SecretKeyTooShortException;
+use PragmaRX\Google2FAQRCode\Google2FA;
 use TCG\Voyager\Voyager;
 use TCG\Voyager\Models\MenuItem;
 
@@ -20,6 +23,95 @@ class TwoFA
     public $repository = 'kuliks08/voyager-2fa';
     public $website = 'https://github.com/kuliks08/voyager-2fa';
     public $version = '1.0.0';
+    protected $timeout;
+
+    /**
+     * The cached verified responses.
+     *
+     * @var array
+     */
+    protected $verifiedResponses = [];
+
+    /**
+     * 2FA.
+     *
+     * @param string $timeout
+     */
+    public function __construct($timeout)
+    {
+        $this->timeout = $timeout;
+    }
+
+    /**
+     * Render 2FA.
+     *
+     * @param array $attributes
+     *
+     * @return string
+     */
+    public function display($attributes = [])
+    {
+        $attributes = $this->prepareAttributes($attributes);
+        return '<div' . $this->buildAttributes($attributes) . '></div>';
+    }
+
+    /**
+     * @see display()
+     */
+    public function displayWidget($attributes = [])
+    {
+        return $this->display($attributes);
+    }
+
+    /**
+     * Verify 2fa response.
+     *
+     * @param string $response
+     * @param string $clientIp
+     *
+     * @return bool
+     */
+    public function verifyResponse($response, $clientIp = null)
+    {
+        if (empty($response)) {
+            return false;
+        }
+
+        // Return true if response already verfied before.
+        if (in_array($response, $this->verifiedResponses)) {
+            return true;
+        }
+
+        $verifyResponse = $this->sendRequestVerify([
+            'secret' => $this->secret,
+            'response' => $response,
+            'remoteip' => $clientIp,
+        ]);
+
+        if (isset($verifyResponse['success']) && $verifyResponse['success'] === true) {
+            // A response can only be verified once from google, so we need to
+            // cache it to make it work in case we want to verify it multiple times.
+            $this->verifiedResponses[] = $response;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Verify 2fa response by Symfony Request.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return bool
+     */
+    public function verifyRequest(Request $request)
+    {
+        return $this->verifyResponse(
+            $request->get('2fa-response'),
+            $request->getClientIp()
+        );
+    }
 
     public function provideJS(): string
     {
