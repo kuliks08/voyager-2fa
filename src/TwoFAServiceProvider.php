@@ -15,7 +15,7 @@ class TwoFAServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__.'/../config/2fa.php' => config_path('2fa.php'),
-        ], 'config');
+        ], '2fa-config');
 
         $this->app->singleton('VoyagerGuard', function () {
             return 'voyager-2fa-login';
