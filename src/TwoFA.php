@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use PragmaRX\Google2FALaravel\Google2FA;
 use TCG\Voyager\Facades\Voyager;
+use TCG\Voyager\Models\MenuItem;
 
 class TwoFA
 {
@@ -103,10 +104,21 @@ class TwoFA
     }
 
     private function registerUserMenuItems() {
-        Voyager::addAction(
-            (new UserMenuItem(__('voyager::generic.dashboard')))->route('voyager.dashboard'),
-            (new UserMenuItem('Manage 2FA'))->route('voyager.voyager-manage-2fa'),
-            (new UserMenuItem(__('voyager::auth.logout')))->route('voyager.logout')
-        );
+        // Проверяем, есть ли уже пункт меню "Manage 2FA", чтобы избежать дублирования
+        $existingMenuItem = MenuItem::where('title', 'Manage 2FA')->first();
+
+        if (!$existingMenuItem) {
+            // Создаем новый пункт меню только если его еще нет
+            Voyager::addAction(
+                (new MenuItem([
+                    'title' => 'Manage 2FA',
+                    'url' => route('voyager.voyager-manage-2fa'), // ваш маршрут для управления 2FA
+                    'icon_class' => 'voyager-lock', // иконка, если требуется
+                    'parent_id' => null, // если это дочерний пункт меню, установите соответствующий parent_id
+                    'order' => 10, // порядковый номер пункта меню
+                ]))
+            );
+        }
     }
+
 }
